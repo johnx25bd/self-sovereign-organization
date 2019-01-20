@@ -21,11 +21,8 @@ Major question: privacy. Are all on-chain data / IPFS-addressed content encrypte
 **Users**
 
 Participants
-
 Clients / customers
-
 Arbitrators
-
 ...?
 
 #### Front end
@@ -33,11 +30,8 @@ Arbitrators
 **Interfaces**
 
 Deploy project
-
 Participants accept terms (multisig to initiate project)
-
 Accept / distribute funds (is this an interface?)
-
   Payment
 
   Budget allocation
