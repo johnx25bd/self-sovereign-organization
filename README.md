@@ -32,64 +32,45 @@ Arbitrators
 Deploy project  
 Participants accept terms (multisig to initiate project)  
 Accept / distribute funds (is this an interface?)  
-...Payment  
-...Budget allocation  
+   Payment  
+   Budget allocation  
 Submit evidence / deliverable  
-...Evidence review (multisig)  
-......approve - execute terms  
-......revise  
-......contest / reject - divert to arbitration
+   Evidence review (multisig)  
+      approve - execute terms  
+      revise  
+      contest / reject - divert to arbitration  
+   Should trigger notification to reviewers  
+Project dashboard (who can view?)  
+   Users (contact details?)  
+   Assets (i.e. submissions)  
+   Tasks (upcoming, awaiting review, approved, disputed)  
+      Calendar view  
+      Owner view  
+      Category view  
+      Status view  
 
-  Should trigger notification to reviewers
-
-Project dashboard (who can view?)
-
-  Users (contact details?)
-
-  Assets (i.e. submissions)
-
-  Tasks (upcoming, awaiting review, approved, disputed)
-
-    Calendar view
-
-    Owner view
-
-    Category view
-
-    Status view
-
-*React*
-
+*React*  
 *web3.js*
 
 #### Back end
 
 **EVM**
 
-deploy project
+deploy project  
+user accept role  
+accept / disburse funds  
+create / update task (ongoing - agile)  
+submit / review evidence  
+(see rough [sso.sol]('./contracts/sso.sol'))  
 
-user accept role
-
-accept / disburse funds
-
-create / update task (ongoing - agile)
-
-submit / review evidence
-
-(see rough [sso.sol]('./contracts/sso.sol'))
-
-*Solidity*
-
-*Gnosis Safe*
-
+*Solidity*  
+*Gnosis Safe*  
 *Nucypher*
 
 #### Traditional server
 
 Server hosting website, cache of project-relevant files (IPFS node? SQL or mongo database?)
 
-*Node*
-
-*mongodb*
-
+*Node*  
+*mongodb*  
 *web3.js*
