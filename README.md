@@ -29,22 +29,16 @@ Arbitrators
 
 **Interfaces**
 
-Deploy project
-Participants accept terms (multisig to initiate project)
-Accept / distribute funds (is this an interface?)
-  Payment
-
-  Budget allocation
-
-Submit evidence / deliverable
-
-  Evidence review (multisig)
-
-    approve - execute terms
-
-    revise
-
-    contest / reject - divert to arbitration
+Deploy project  
+Participants accept terms (multisig to initiate project)  
+Accept / distribute funds (is this an interface?)  
+...Payment  
+...Budget allocation  
+Submit evidence / deliverable  
+...Evidence review (multisig)  
+......approve - execute terms  
+......revise  
+......contest / reject - divert to arbitration
 
   Should trigger notification to reviewers
 
