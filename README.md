@@ -15,7 +15,7 @@ A research paper describing the problem, defining terms, critically exploring so
 A functional prototype deployed on an ethereum testnet, with some traditional back-end architecture (server, off-chain databases).
 
 Major question: privacy. Are all on-chain data / IPFS-addressed content encrypted? With which key?
-  Nucypher FHE library and proxy re-encryption scheme
+  *Nucypher* FHE library and proxy re-encryption scheme
 
 **Users**
 
@@ -48,8 +48,8 @@ Project dashboard (who can view?)
     Category view
     Status view
 
-React
-web3.js
+*React*
+*web3.js*
 
 #### Back end
 
@@ -62,12 +62,14 @@ create / update task (ongoing - agile)
 submit / review evidence
 (see rough [sso.sol]('./contracts/sso.sol'))
 
-Solidity
+*Solidity*
+*Gnosis Safe*
+*Nucypher*
 
 #### Traditional server
 
 Server hosting website, cache of project-relevant files (IPFS node? SQL or mongo database?)
 
-Node
-mongodb
-web3.js
+*Node*
+*mongodb*
+*web3.js*
