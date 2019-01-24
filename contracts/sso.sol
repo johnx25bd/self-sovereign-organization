@@ -7,6 +7,7 @@ mapping (address => investor) investors;
 
 struct participant {
   address ethaddress;
+  string githubusername;
   float equity;
   // DID ?
 }
@@ -22,7 +23,7 @@ struct IpfsHash {
 }
 
 struct Task {
-  address owner;
+  address[] owner;
   uint duetime;
   IpfsHash requirements; // ipfs address to file detailing requirements
   IpfsHash evidence; // address to file (encrypted?)
@@ -35,7 +36,7 @@ struct Task {
   // more here about arbitrator address maybe?
 }
 
-// Some structure superior to Task - Sprint or Milestone? 
+// Some structure superior to Task - Sprint or Milestone?
 
 // contract addresses for payment wallets - automatically disburse
 
