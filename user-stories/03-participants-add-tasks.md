@@ -1,6 +1,6 @@
 # Tasks are added
 
-At project outset tasks need to be added that represent every asset that needs to be created in order to successfully complete their project.
+At project outset tasks need to be added that represent every asset that needs to be created in order to successfully complete their project. For each of these a detailed file is generated and included in the submission detailing exactly what "complete" looks like - detailed specifications. Plus, a due date is included in each.
 
 Alice and Bob collaborate to submit the following Develoment tasks:
 1. Define data model and software architecture (Alice)
@@ -24,4 +24,4 @@ Ella submits these supporting tasks:
 4. Generate list of 15 potential travel apps to approach with specific contact details
 5. Test and bug squash
 
-The team feels that if all of these tasks are completed, they will have a functional website up on the internet. 
+The team feels that if all of these tasks are completed, they will have a functional website up on the internet.
