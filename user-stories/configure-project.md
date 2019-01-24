@@ -14,7 +14,7 @@ They meet and set out the terms of their collaboration:
 - A simple majority will determine whether tasks are accepted.
   - If accepted, the budget is released to the task owner (or a contract controlled by the task owner) to spend.
   - If rejected, the task is burned. A revised iteration of the task can be proposed, but this is an independent action.
-- Once the task owner has completed their task, they are required to submit evidence of completion to the contract.
+- Once the task owner has completed their task, they are required to submit evidence of completion to the contract by committing the data to a github account that they all have the password to, and sharing the git commit in the evidence submission.
 - Upon receipt of evidence, all the other team members must review the evidence to assess whether it meets the criteria set out at task.
   - If a majority of voters agree (i.e. 3/4), the task is either marked as completed or rejected.
   - If completed, the reward is distributed to the task owner as compensation.
