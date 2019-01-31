@@ -74,3 +74,28 @@ Server hosting website, cache of project-relevant files (IPFS node? SQL or mongo
 *Node*  
 *mongodb*  
 *web3.js*
+
+
+
+
+# Equity
+
+Each participant will be expected to contribute their share.
+
+## Expected contributions:
+
+John IV - manage project. Solidity, front end, back end development. Support design. Support research.
+
+Alex Z - research and write DAO section of research paper. Solidity development and support.
+
+Amanda T - research and write Ricardian contracts section of research paper. App testing.
+
+Lorcan D - research and write privacy section of research paper. Solidity and web3.js code review. App testing.
+
+Isaac - Prototype app architecture design. Full stack code support and review. App testing.
+
+Tobias - UI development support. App testing.
+
+Alex T - UX / UI designs. App testing.
+
+At the end we will each assess ourselves and every other participant in the project based on the extent to which we delivered on our expected contribution. If there is a discrepancy between self- and group perceptions, the average of all perceived contributions will be deemed the appropriate proportionate contribution. Ongoing documentary evidence of work will do a great deal to show contribution and ensure value of effort is captured throughout the duration of the project. 
