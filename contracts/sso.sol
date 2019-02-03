@@ -1,7 +1,13 @@
-// Pseudocode / rough outline of contracts for the self-sovereign organization
+pragma solidity ^0.5.2;
+
+import '@daostack/arc/contracts/universalSchemes/UniversalScheme.sol';
+
+
+
+
 
 // Data
-string[] statuses; // potential statuses for tasks
+enum statuses {x, y, z}; // potential statuses for tasks -
 mapping (address => participant) participants;
 mapping (address => investor) investors;
 
@@ -22,17 +28,26 @@ struct IpfsHash {
   uint hashSize;
 }
 
+enum TaskStatus {proposed, rejected, inProgress, evidenceSubmitted, completed};
+
 struct Task {
-  address[] owner;
-  uint duetime;
-  IpfsHash requirements; // ipfs address to file detailing requirements
+  uint id;
+  address owner;
+
+  IpfsHash requirementsIpfsHash; // ipfs address to file detailing requirements or git commit message
+  string requirementsGitCommit; // URL to github file
   IpfsHash evidence; // address to file (encrypted?)
+  GitCommit evidenceGitCommit;
   bool approved;
-  string status;
-  float budget;
+  TaskStatus taskStatus;
+  uint budget; // wei
+  uint reward;
   address budgetrecipient; // more sophisticated - address and proportion / absolute number of budget?
-  task[] dependencies; // tasks that must be complete prior to this task
+  mapping[] dependencies; // tasks that must be complete prior to this task
   address[] reviewers; // reviewers who need to approve task - may need more nuance - weighted votes, say
+  uint deadline;
+  uint duration;
+  uint submissionTime;
   // more here about arbitrator address maybe?
 }
 
@@ -40,7 +55,7 @@ struct Task {
 
 // contract addresses for payment wallets - automatically disburse
 
-function SSO () {
+constructor () public {
   // constructor function
   // perhaps define list of approved investors
 }

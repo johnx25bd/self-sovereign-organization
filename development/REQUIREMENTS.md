@@ -27,6 +27,14 @@ Storage of tasks and task state
 
 Rules for updating or dissolving project
 
+
+#### Contracts / Functions
+
+```javascript
+
+
+```
+
 #### DAOstack
 
 **Schemes**
