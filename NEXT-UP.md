@@ -12,7 +12,7 @@
 
 
 
-Development - next up
+## Development - next up
 
 Review and tidy contract state variables and structs
 Work out voting integration (DAOstack Infra) - task proposals and evidence submissions
@@ -21,7 +21,7 @@ Unit test the fuck out of it
 
 
 
-Development - soonish
+## Development - soonish
 
 Design and develop front end interfaces
 - Propose task

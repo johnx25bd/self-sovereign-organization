@@ -14,6 +14,9 @@ contract Project is AbsoluteVote {
 
   bool initiated public;
   string githubRepo public;
+  string purpose;
+  string arbitraryRequirements;
+  string legalContractUrl;
 
   Participant [] participants;
   uint taskId;
@@ -28,14 +31,16 @@ contract Project is AbsoluteVote {
     string githubUsername;
     uint owes
     float equity;
+    string name;
     // DID ?
   }
 
-  constructor(string _githubRepo, address _adminRole) public {
+  constructor(string _githubRepo, address _adminRole, string _purpose) public {
 
     participants.add(_adminRole);
     absoluteVote = new AbsoluteVote();
     githubRepo = _githubRepo; // test validity
+    purpose = _purpose;
     // create participants[] array with addresses
 
   }
@@ -60,10 +65,11 @@ contract Project is AbsoluteVote {
     paid[msg.sender] = true;
   }
 
-  function initiate() public  {
+  function initiate(_legalContractUrl) public  {
     for (uint i = 0; i < participants.length; i++) {
       require(paid[participants[i]]);
     }
+    legalContractUrl = _legalContractUrl;
     initiated = true;
   }
 
