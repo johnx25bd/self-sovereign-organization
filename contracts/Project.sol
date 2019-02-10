@@ -76,6 +76,7 @@ contract Project is AbsoluteVote {
     uint _reward
   ) public
     returns (uint){
+
     require(initiated == true);
     // create Task
     Task memory newTask;
@@ -86,18 +87,60 @@ contract Project is AbsoluteVote {
     newTask.status = TaskStatus.proposed;
     newTask.reward = _reward;
 
-    taskId = taskId.add(1);
-    tasks[taskId] = newTask;
+    // Hash this?
+    taskCnt = taskCnt.add(1);
+    tasks[taskCnt] = newTask;
 
+    // –––––––––– PROPOSING ––––––––––
+    // We should use interfaces – these allow us to call functions from other contracts
 
-    absoluteVote.propose()
+    address IntVoteInterfaceAddress =  ;// find the address
+
+    IntVoteInterface absoluteVote = IntVoteInterface(IntVoteInterfaceAddress);
+
+    // first use this in deploy.js
+    // Set the voting parameters for the Absolute Vote Voting Machine
+    await absoluteVote.setParameters(votePercentage, true);
+
+    // Voting parameters and schemes params:
+    var voteParametersHash = await absoluteVote.getParametersHash(
+      votePercentage,
+      true
+      );
+
+    // next, calling PROPOSE
+    // Need to pass: 1) # of choices  2) paramsHash  3) msg.sender  4) organisation address
+    // -- numOfChoices = 2 ('yes' or 'no')
+    // -- paramsHash = absoluteVote.getParamsHash() AFTER setting the parameters by calling absoluteVote.setParams()
+    // -- msg.sender
+    // -- address _organization = if 0, _organization = msg.sender
+
+    // However, it seems that absoluteVote also stores different proposals (tasks)
+    // Hence, if used as it is, we would store all the info twice
+
+    bytes32 taskId;
+    taskId = absoluteVote.propose(numOfChoices, paramsHash, msg.sender, organisationAddress);
 
 
     return taskId;
   }
 
   function voteOnTask(uint _taskId) {
-    vote.vote()
+
+    // –––––––––– VOTING ––––––––––
+    // Inputs:
+    // -- bytes32 taskId = identification hash of the task
+    // -- uint256 _vote = the vote
+    // -- uint256 _amount = reputation
+    // -- address _voter = this is used if you are allowed to vote on someone's behalf
+
+    voteDecision = absoluteVote.vote(taskId, vote, reputation, voter);
+    // returns False, if the vote has not been completed or the threshold has been passed
+    // emits ExecuteProposal from IntVoteInterface, if completed
+      // AND returns executeProposal function inside ProposalExecuteInterface
+      // I am guessing we could replace this to return True
+
+
     // If failed, _
 
     // if approved
