@@ -27,6 +27,7 @@ Storage of tasks and task state
 
 Rules for updating or dissolving project
 
+*Could* extend app to run on [ThunderCore](https://www.thundercore.com/migrate-ethereum-dapps) rather than EVM ...
 
 #### Contracts / Functions
 

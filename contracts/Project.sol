@@ -6,6 +6,23 @@ import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
 // reputation ? or role-based reputation (RBR)
 //
 
+contract ProjectFactory {
+  using SafeMath for uint;
+
+  uint projectNum;
+
+  constructor () {
+
+  }
+
+  function createProject () {
+
+    projectNum = projectNum + 1;
+  }
+
+
+}
+
 contract Project is AbsoluteVote {
   using SafeMath for uint;
   using Roles.Role for Role;
@@ -14,7 +31,7 @@ contract Project is AbsoluteVote {
 
   bool initiated public;
   string githubRepo public;
-  string purpose;
+  string purpose public;
   string arbitraryRequirements;
   string legalContractUrl;
 
@@ -26,6 +43,9 @@ contract Project is AbsoluteVote {
   mapping(uint => Task) tasks;
   mapping(address => bool) paid;
 
+  struct Task {
+    // or should this be a contract?!?!??!
+  }
   struct Participant {
     address ethAddress;
     string githubUsername;
@@ -59,7 +79,7 @@ contract Project is AbsoluteVote {
     require(owing[msg.sender]);
     require(paid[msg.sender] == false);
     require(msg.value >= owing[msg.value]);
-    // forward money to gnosis safe
+    // convert ether to dai
       // ***stuff to code***
 
     paid[msg.sender] = true;
@@ -70,6 +90,7 @@ contract Project is AbsoluteVote {
       require(paid[participants[i]]);
     }
     legalContractUrl = _legalContractUrl;
+    // do something with dai?
     initiated = true;
   }
 
@@ -78,7 +99,7 @@ contract Project is AbsoluteVote {
     address _owner,
     uint _duration, //seconds
     string _requirementsGitCommit, //git commit hash "36c989247e49df868ff6b990ede7bcfe7c94b5bd"
-    uint _budget, // wei
+    uint _budget, // wei or dai?
     uint _reward
   ) public
     returns (uint){
@@ -104,6 +125,8 @@ contract Project is AbsoluteVote {
 
   function voteOnTask(uint _taskId) {
     vote.vote()
+    // Need some votes data holder
+    // Add vote to holder
     // If failed, _
 
     // if approved
