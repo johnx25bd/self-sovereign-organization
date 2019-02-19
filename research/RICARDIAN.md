@@ -7,3 +7,5 @@ While the self sovereign organization is intended to alleviate the need for coll
   The automatic generation of the legal component of the Ricardian contract will only be possible within project deployments generated from a narrow band of parameters. More sophisticated, custom implementations of the scheme will require lawyers to work alongside smart contract developers to ensure that a valid custom Ricardian contract is created. This said, we expect that it will typically be much easier to generate a legal contract from Solidity code than the other way around - we anticipate that a best practice will be to involve lawyers perhaps at the early design phase, but really after contracts have been thoroughly tested and are ready for deployment, so developers don't make changes that render legal contracts invalid.
 
   Further, we recommend that the ABI be included in the legal contract so all functions and contract attributes are preserved in one document.
+
+  HERE IS A SMALL EXTENSION TO THE RESEARCH
