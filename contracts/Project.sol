@@ -29,8 +29,8 @@ contract Project is AbsoluteVote {
   using Roles.Role for Role;
 
   // Setting up the interface to use absoluteVote
-  address IntVoteInterfaceAddress = 0x8405f70a82d2719057892e7d19e2db35f23cae5b; // address of the absoluteVote contract on Ganache
-  IntVoteInterface absoluteVote = IntVoteInterface(IntVoteInterfaceAddress);
+  IntVoteInterface absoluteVote;
+  bytes32 voteParametersHash;
 
   Role participants;
   bool initiated public;
@@ -40,17 +40,22 @@ contract Project is AbsoluteVote {
   string legalContractUrl;
 
   Participant [] participants;
-  uint taskId;
+  uint taskCnt;
   // AbsoluteVote absoluteVote;
 
   mapping(address => uint) owing;
   mapping(uint => Task) tasks; // bytes32 taskId  to  Task?
   mapping(address => Participant); // mapping for participants?
   mapping(address => bool) paid;
+  mapping(bytes32 => uint) quorums;
+
+  enum TaskStatus = {proposed, accepted, approved, inProgress, rejected};
 
   struct Task {
     // or should this be a contract?!?!??!
+    TaskStatus status;
   }
+
   struct Participant {
     address ethAddress;
     string githubUsername;
@@ -60,9 +65,13 @@ contract Project is AbsoluteVote {
     // DID ?
   }
 
-  constructor(string _githubRepo, address _adminRole, string _purpose) public {
+  constructor(string _githubRepo, address _adminRole, string _purpose, address _voteInterface, uint _votePercentage) public {
     participants.add(_adminRole);
-    absoluteVote = new AbsoluteVote();
+
+    // address IntVoteInterfaceAddress = 0x8405f70a82d2719057892e7d19e2db35f23cae5b; // address of the absoluteVote contract on Ganache
+    absoluteVote = IntVoteInterface(_voteInterface);
+    absoluteVote.setParameters(_votePercentage, true);
+
     githubRepo = _githubRepo; // test validity
     purpose = _purpose;
     // create participants[] array with addresses
@@ -82,9 +91,10 @@ contract Project is AbsoluteVote {
     require(owing[msg.sender]);
     require(paid[msg.sender] == false);
     require(msg.value >= owing[msg.value]);
-    // convert ether to dai
+    // convert ether to dai (MakerDAO)
       // ***stuff to code***
-
+      //  swaps for DAI maybe ...
+      // Route funds to multisig wallet (Gnosis)
     paid[msg.sender] = true;
   }
 
@@ -103,12 +113,14 @@ contract Project is AbsoluteVote {
     uint _duration, //seconds
     string _requirementsGitCommit, //git commit hash "36c989247e49df868ff6b990ede7bcfe7c94b5bd"
     uint _budget, // wei or dai?
-    uint _reward
+    uint _reward,
+    uint _votePercentage
   ) public
-    returns (uint){
+    returns (bytes32){
 
     require(initiated == true);
     // create Task
+
     Task memory newTask;
     newTask.owner = _owner;
     newTask.duration = _duration;
@@ -116,6 +128,15 @@ contract Project is AbsoluteVote {
     newTask.budget = _budget;
     newTask.status = TaskStatus.proposed;
     newTask.reward = _reward;
+
+
+    // Voting parameters and schemes params:
+      // _votePercentage defined by proportion of funds proposed to be spent or something
+      uint votePercentage = _votePercentage;
+    voteParametersHash = absoluteVote.getParametersHash(
+      votePercentage,
+      true
+    );
 
     // Hash this?
     taskCnt = taskCnt.add(1);
@@ -134,20 +155,51 @@ contract Project is AbsoluteVote {
     // However, it seems that absoluteVote also stores different proposals (tasks)
     // Hence, if used as it is, we would store all the info twice
 
-    bytes32 taskId;
-    taskId = absoluteVote.propose(numOfChoices, paramsHash, msg.sender, organisationAddress);
+    // Build out initiating task voting period
+    uint numOfChoices = 1;
 
+
+    bytes32 taskId = absoluteVote.propose(numOfChoices, voteParametersHash, msg.sender, address(this));
+    quorums[taskId] = votePercentage;
+
+    // Figure how to to transmit taskId to client for proposer to email to other participants
+    // With an event.
     return taskId;
+    // ideally we have a db on the server with tasks and statuses, including everyone who has and hasn't voted on them.
+    // When people log in, they get an interface with Things They Need To Vote On and Tasks They Need To Complete
+
+    // BUT for MVP - proposer emails the other members the taskId and asks them to go vote
   }
 
-<<<<<<< HEAD
-  function voteOnTask(uint _taskId) {
-    vote.vote()
-    // Need some votes data holder
-    // Add vote to holder
-    // If failed, _
-=======
-  function voteOnTask(uint _taskId, uint _vote) {
+  // Called by task owner
+  function submitEvidence (uint _taskId, string _evidenceGitCommit) public returns (bytes32) {
+    Task memory task = tasks[_taskId];
+
+    require(task.owner == msg.sender); // do we need this?
+    require(task.TaskStatus == TaskStatus.inProgress);
+    task.submissionTime = now; /// this will be messed if multiple submissions of evidence are called
+    task.evidenceGitCommit = _evidenceGitCommit;
+
+    tasks[_taskId] = task;
+
+    // Again, transmit evidenceVoteId to client with event.
+    bytes32 evidenceVoteId = initiateEvidenceBallot();
+    return evidenceVoteId;
+    // pretty much always invoke initiateEvidenceBallot() immediately ...
+  }
+
+  function initiateEvidenceBallot () private returns (bytes32) {
+    uint numOfChoices = 1;
+    bytes32 evidenceVoteId = absoluteVote.propose(numOfChoices, voteParametersHash, msg.sender, address(this));
+    return evidenceVoteId;
+  }
+
+
+  /*
+  @params _ballotId bytes32 returned by absoluteVote.propose() - i.e. ballot reference
+  @params _vote uint 0 = NO, 1 = YES.
+  */
+  function vote(bytes32 _ballotId, uint _vote) {
 
     // –––––––––– VOTING ––––––––––
     // Inputs:
@@ -159,7 +211,6 @@ contract Project is AbsoluteVote {
     // Accessing data
     Task memory task = tasks[_taskId];
     Participant memory participant = participants[msg.sender];
->>>>>>> 76e2b7f03c3d4f5d089a9f87e27846ba44da2459
 
     // Initialising inputs
     vote = _vote;
@@ -169,6 +220,13 @@ contract Project is AbsoluteVote {
 
     // Voting
     voteDecision = absoluteVote.vote(_taskId, vote, reputation, voter);
+    if (voteDecision == 2) {
+      // get info from tasks][_taskId]
+      // transmit budget to owner address
+      // change task status to approved
+      // different logic for evidence vs task proposal vote???
+    }
+
     task.totalVotes = task.totalVotes.add(1); // add to the total number of votes
 
     // if not completed (or threshold has been passed), returns False
@@ -182,15 +240,15 @@ contract Project is AbsoluteVote {
       // Disburse budget to task owner or TaskWallet contract
 
     // if everyone voted
-    if task.totalVotes == len(participants) {
-      tally(_taskId, voteDecision);
-    } else {
-      _;
-    }
+    uint quorum = quorums[_taskId];
 
+    if (task.totalVotes >= quorum) {
+      tally(_taskId, voteDecision);
+    }
 
   }
 
+// do we need this?
   function tally(uint _taskId, bool _voteDecision) public {
     require(_voteDecision);
 
@@ -205,32 +263,10 @@ contract Project is AbsoluteVote {
     }
   }
 
-  // Called by task owner
-  function submitEvidence (uint _taskId, string _evidenceGitCommit) {
-    Task memory task = tasks[_taskId];
 
-    require(task.owner == msg.sender); // do we need this?
-    require(task.TaskStatus == TaskStatus.inProgress);
-    task.submissionTime = now; /// this will be messed if multiple submissions of evidence are called
-    task.evidenceGitCommit = _evidenceGitCommit;
-
-    tasks[_taskId] = task;
-  }
-
-  // Called by each participant or voter.
-  function voteOnEvidence () {
-    // Once we figure out voting mechanism, implement here.
-    // This would leverage task.reviewers[] .... but not yet.
-
-
-    // if votes.length = participants.length {
-      // tallyEvidenceVotes()
-    //}
-
-  }
-
+  // do we need this?
   // Called by admin or voteOnEvidence()
-  function tallyEvidenceVotes () {
+  function tallyEvidenceVotes (_evidenceVoteId) {
 
     require( /* all votes are in */ );
 

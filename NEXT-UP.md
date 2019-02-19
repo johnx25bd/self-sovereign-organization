@@ -10,12 +10,16 @@
 - Design task submission and task review interfaces
 
 
-
-
 ## Development - next up
 
 Review and tidy contract state variables and structs
-Work out voting integration (DAOstack Infra) - task proposals and evidence submissions
+Complete voting integration (DAOstack Infra) - task proposals and evidence submissions
+
+> propose task, submit evidence are almost complete. Refactored vote() to apply to both ballot types. Need to work out tally and handling winner. Build in
+
+Build out Task struct definition
+
+
 Look into implementing Roles (if we want to include multiple roles ...)
 Unit test the fuck out of it
 
