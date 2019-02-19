@@ -1,6 +1,7 @@
 import "./openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "./openzeppelin-solidity/contracts/access/Roles.sol";
 import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
+import "./IntVoteInterface.sol";
 
 // gnosis safe - multisig wallet
 // reputation ? or role-based reputation (RBR)
@@ -27,8 +28,11 @@ contract Project is AbsoluteVote {
   using SafeMath for uint;
   using Roles.Role for Role;
 
-  Role participants;
+  // Setting up the interface to use absoluteVote
+  address IntVoteInterfaceAddress = 0x8405f70a82d2719057892e7d19e2db35f23cae5b; // address of the absoluteVote contract on Ganache
+  IntVoteInterface absoluteVote = IntVoteInterface(IntVoteInterfaceAddress);
 
+  Role participants;
   bool initiated public;
   string githubRepo public;
   string purpose public;
@@ -37,10 +41,11 @@ contract Project is AbsoluteVote {
 
   Participant [] participants;
   uint taskId;
-  AbsoluteVote absoluteVote;
+  // AbsoluteVote absoluteVote;
 
   mapping(address => uint) owing;
-  mapping(uint => Task) tasks;
+  mapping(uint => Task) tasks; // bytes32 taskId  to  Task?
+  mapping(address => Participant); // mapping for participants?
   mapping(address => bool) paid;
 
   struct Task {
@@ -56,13 +61,11 @@ contract Project is AbsoluteVote {
   }
 
   constructor(string _githubRepo, address _adminRole, string _purpose) public {
-
     participants.add(_adminRole);
     absoluteVote = new AbsoluteVote();
     githubRepo = _githubRepo; // test validity
     purpose = _purpose;
     // create participants[] array with addresses
-
   }
 
   // Invoked daily by server-side CRON .
@@ -103,6 +106,7 @@ contract Project is AbsoluteVote {
     uint _reward
   ) public
     returns (uint){
+
     require(initiated == true);
     // create Task
     Task memory newTask;
@@ -113,32 +117,85 @@ contract Project is AbsoluteVote {
     newTask.status = TaskStatus.proposed;
     newTask.reward = _reward;
 
-    taskId = taskId.add(1);
-    tasks[taskId] = newTask;
+    // Hash this?
+    taskCnt = taskCnt.add(1);
+    tasks[taskCnt] = newTask;
 
+    // –––––––––– PROPOSING ––––––––––
+    // We should use interfaces – these allow us to call functions from other contracts
 
-    absoluteVote.propose()
+    // next, calling PROPOSE
+    // Need to pass: 1) # of choices  2) paramsHash  3) msg.sender  4) organisation address
+    // -- numOfChoices = 2 ('yes' or 'no')
+    // -- paramsHash = absoluteVote.getParamsHash() AFTER setting the parameters by calling absoluteVote.setParams()
+    // -- msg.sender
+    // -- address _organization = if 0, _organization = msg.sender
 
+    // However, it seems that absoluteVote also stores different proposals (tasks)
+    // Hence, if used as it is, we would store all the info twice
+
+    bytes32 taskId;
+    taskId = absoluteVote.propose(numOfChoices, paramsHash, msg.sender, organisationAddress);
 
     return taskId;
   }
 
+<<<<<<< HEAD
   function voteOnTask(uint _taskId) {
     vote.vote()
     // Need some votes data holder
     // Add vote to holder
     // If failed, _
+=======
+  function voteOnTask(uint _taskId, uint _vote) {
 
+    // –––––––––– VOTING ––––––––––
+    // Inputs:
+    // -- bytes32 taskId = identification hash of the task
+    // -- uint256 _vote = the vote
+    // -- uint256 _amount = reputation
+    // -- address _voter = this is used if you are allowed to vote on someone's behalf
+
+    // Accessing data
+    Task memory task = tasks[_taskId];
+    Participant memory participant = participants[msg.sender];
+>>>>>>> 76e2b7f03c3d4f5d089a9f87e27846ba44da2459
+
+    // Initialising inputs
+    vote = _vote;
+    reputation = participant.equity; // is reputation = equity?
+    voter = msg.sender;
+    bool voteDecision;
+
+    // Voting
+    voteDecision = absoluteVote.vote(_taskId, vote, reputation, voter);
+    task.totalVotes = task.totalVotes.add(1); // add to the total number of votes
+
+    // if not completed (or threshold has been passed), returns False
+    // if completed, emits ExecuteProposal from IntVoteInterface
+      // AND returns executeProposal function inside ProposalExecuteInterface
+      // I am guessing we could replace this to return True
+
+
+    // If failed, _
     // if approved
       // Disburse budget to task owner or TaskWallet contract
 
+    // if everyone voted
+    if task.totalVotes == len(participants) {
+      tally(_taskId, voteDecision);
+    } else {
+      _;
+    }
+
+
   }
 
-  function tally(uint _taskId) public {
-    //require(votesAllIn);
-    //yes = calculate winner()
+  function tally(uint _taskId, bool _voteDecision) public {
+    require(_voteDecision);
+
     Task memory task = tasks[_taskId];
-    if (yes == true) {
+    if (_voteDecision == true) {
       task.status = TaskStatus.inProgress;
       task.deadline = now + task.duration;
       (task.owner).transfer(task.budget); // or transfer to task budget wallet, owned by owner or multisig ...
