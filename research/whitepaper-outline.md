@@ -28,8 +28,18 @@ Amanda T - Ricardian contracts
 
 Alex Z - small scale DAOs, collective decision-making on tasks
 
-Lorcan D - private projects on public blockchains 
+Lorcan D - private projects on public blockchains
 
 ## Use cases
 
 ## Anticipated challenges
+
+## Extensions
+
+### Kyber Network
+
+These self-sovereign organizations are designed to grant control of an organization's financial and informational assets to its members. Sophisticated implementations of the contracts might require multiple different utility tokens to be used; organizations may need to accept different types of currencies from investors or customers.
+
+The Kyber liquidity network would enable organizations to manage and exchange baskets of funds in accordance with their needs. This might be as simple as projects being configured to accept ether but pay out task rewards in DAI. The configurability of the platform enables more complex implementations, including investment funds governed by project participants.
+
+### Liquidity Network
