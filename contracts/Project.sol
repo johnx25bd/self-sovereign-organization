@@ -45,19 +45,28 @@ contract Project is AbsoluteVote {
 
   mapping(address => uint) owing;
   mapping(uint => Task) tasks; // bytes32 taskId  to  Task?
-  mapping(address => Participant); // mapping for participants?
+  mapping(address => Participant) participants; // mapping for participants?
   mapping(address => bool) paid;
   mapping(bytes32 => uint) quorums;
+  mapping(bytes32 => bytes32) evidenceToTask; // evidenceVoteId => taskId
 
-  enum TaskStatus = {proposed, accepted, approved, inProgress, rejected};
+  enum TaskStatus = {proposed, inProgress, rejected};
 
   struct Task {
     // or should this be a contract?!?!??!
     TaskStatus status;
+    bytes32 taskId;
+    address owner,
+    uint duration, //seconds
+    string requirementsGitCommit, //git commit hash "36c989247e49df868ff6b990ede7bcfe7c94b5bd"
+    uint budget, // wei or dai?
+    uint reward,
+    uint votePercentage,
   }
 
   struct Participant {
     address ethAddress;
+    string legalName;
     string githubUsername;
     uint owes
     float equity;
@@ -85,6 +94,7 @@ contract Project is AbsoluteVote {
   function addParticipant(address _address) public {
     require(participants.has(msg.sender), "DOES_NOT_HAVE_ADMIN_ROLE");
     participants.add(_address);
+    owing[_address] =
   }
 
   function fund() public payable {
@@ -114,11 +124,12 @@ contract Project is AbsoluteVote {
     string _requirementsGitCommit, //git commit hash "36c989247e49df868ff6b990ede7bcfe7c94b5bd"
     uint _budget, // wei or dai?
     uint _reward,
-    uint _votePercentage
+    uint _votePercentage,
   ) public
     returns (bytes32){
 
     require(initiated == true);
+    require(participants[msg.sender] != 0);
     // create Task
 
     Task memory newTask;
@@ -184,6 +195,8 @@ contract Project is AbsoluteVote {
 
     // Again, transmit evidenceVoteId to client with event.
     bytes32 evidenceVoteId = initiateEvidenceBallot();
+    evidenceToTask[evidenceVoteId] = _taskId;
+
     return evidenceVoteId;
     // pretty much always invoke initiateEvidenceBallot() immediately ...
   }
@@ -199,7 +212,7 @@ contract Project is AbsoluteVote {
   @params _ballotId bytes32 returned by absoluteVote.propose() - i.e. ballot reference
   @params _vote uint 0 = NO, 1 = YES.
   */
-  function vote(bytes32 _ballotId, uint _vote) {
+  function voteOnProposedTask(bytes32 _ballotId, uint _vote) {
 
     // –––––––––– VOTING ––––––––––
     // Inputs:
@@ -214,20 +227,27 @@ contract Project is AbsoluteVote {
 
     // Initialising inputs
     vote = _vote;
-    reputation = participant.equity; // is reputation = equity?
-    voter = msg.sender;
-    bool voteDecision;
+    reputation = participant.equity; // is reputation = equity? ... or hard code this so everyone is equal this iteration
+    voter = msg.sender; // no delegation - for now
+    bool voteDecision; // what does bool represent? AbsoluteVote ... vote() ... internalVote() ... _execute()
 
     // Voting
     voteDecision = absoluteVote.vote(_taskId, vote, reputation, voter);
-    if (voteDecision == 2) {
+    if (/* approved */) {
       // get info from tasks][_taskId]
       // transmit budget to owner address
-      // change task status to approved
-      // different logic for evidence vs task proposal vote???
-    }
+        // change task status to inProgress
+      } else if (/* failed */) {
+        // change taskStatus to rejected
+        // here we could unlock budget that could be locked upon task proposal ...
+        // need to make sure budget exists for any proposed tasks ...
+      } else {
+        // ????
+      }
+
 
     task.totalVotes = task.totalVotes.add(1); // add to the total number of votes
+      // ^^ this logic is likely handled, again, by AbsoluteVote
 
     // if not completed (or threshold has been passed), returns False
     // if completed, emits ExecuteProposal from IntVoteInterface
@@ -243,8 +263,60 @@ contract Project is AbsoluteVote {
     uint quorum = quorums[_taskId];
 
     if (task.totalVotes >= quorum) {
+      // pretty sure this is native to AbsoluteVote contracts ...
       tally(_taskId, voteDecision);
     }
+
+
+  }
+
+  function voteOnEvidence(bytes32 _evidenceVoteId, uint _vote) {
+
+    // –––––––––– VOTING ––––––––––
+    // Inputs:
+    // -- bytes32 taskId = identification hash of the task
+    // -- uint256 _vote = the vote
+    // -- uint256 _amount = reputation
+    // -- address _voter = this is used if you are allowed to vote on someone's behalf
+
+    // Accessing data
+    bytes32 memory taskId = evidenceToTask[_evidenceVoteId];
+    Task memory task = tasks[taskId];
+    Participant memory participant = participants[msg.sender];
+
+    // Initialising inputs
+    vote = _vote;
+    reputation = participant.equity; // is reputation = equity? ... or hard code this so everyone is equal this iteration
+    voter = msg.sender; // no delegation - for now
+    bool voteDecision; // what does bool represent? AbsoluteVote ... vote() ... internalVote() ... _execute()
+
+    // Voting
+    voteDecision = absoluteVote.vote(_taskId, vote, reputation, voter);
+    if (/* approved */) {
+      // if (now < deadline)
+        // transmit reward to owner address
+      // change task status to completed
+    } else if (/* failed */) {
+        // do not change taskStatus
+        // Can owners resubmit, or do we have a failed state in TaskStatus enum?
+    } else {
+        // ????
+    }
+
+    // --------- this needs work vvvv ---------
+    // if not completed (or threshold has been passed), returns False
+    // if completed, emits ExecuteProposal from IntVoteInterface
+      // AND returns executeProposal function inside ProposalExecuteInterface
+      // I am guessing we could replace this to return True
+
+    // if everyone voted
+    uint quorum = quorums[_taskId];
+
+    if (task.totalVotes >= quorum) {
+      // pretty sure this is native to AbsoluteVote contracts ...
+      tally(_taskId, voteDecision);
+    }
+
 
   }
 
