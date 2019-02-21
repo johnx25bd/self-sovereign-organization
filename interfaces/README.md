@@ -32,4 +32,4 @@ Responsive interfaces allowing participants to:
 - vote on evidence
 	who? anyone
 	- evidenceVoteId
-	- vote 
+	- vote
