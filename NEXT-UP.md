@@ -1,13 +1,50 @@
 
 
+FINAL PUSH
+
+
+
 # Research
 
+- Organize concept note, Ricardian research, possibly homomorphic encryption research into one research paper
+- Add in ?????
 
+# Ricardian contracts
+
+- Write draft legal contract (Amanda)
+- Review and adapt draft legal contract
+  - identify templateable spots
+    - People. Legal name. Github username. Ethereum wallet address.
+    - Funds or investment
+    - Contract address
+    - Voting schemes (???)
+    - Specify off-chain communication (i.e. task proposer transmitting taskId to other participants)
+    - Adding and ejecting participants
+  - Add in appendices - ABI, Contract code, constructor parameters, bytecode
+- Draft Ricardian contracts section of research paper
+  - Arbitration
+  - Companies House compatibility
+  - Docusign or other digital signatures
+  - [This research](./research/RICARDIAN.md)
 
 # Prototype
 
-- Read DAOstack documentation
-- Design task submission and task review interfaces
+- Design front end interfaces (John)
+  - Initiate project
+    - Download Ricardian contract PDF
+  - Propose task
+  - Submit evidence
+  - Vote on task
+  - Vote on evidence
+- Develop front end interfaces (John)
+- Integrate web3.js with front end interfaces (John, Alex)
+- Build pdf generator in JS using inputs, contract address, bytecode, ABI etc (Alex, John) OR output a txt file ...
+
+- get Project.sol compiling (Alex, John, Isaac)
+- Deploy on testnet (Alex, John, Isaac)
+- Do some testing (Alex, John)
+
+- projectFactory contract ... ?
 
 
 ## Development - next up
