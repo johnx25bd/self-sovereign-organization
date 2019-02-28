@@ -1,6 +1,6 @@
-import "./openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./openzeppelin-solidity/contracts/access/Roles.sol";
-import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
+import "installed_contracts/zeppelin/contracts/math/SafeMath.sol";
+import "installed_contracts/zeppelin/contracts/access/Roles.sol";
+import "node_modules/@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
 import "./IntVoteInterface.sol";
 
 // gnosis safe - multisig wallet
