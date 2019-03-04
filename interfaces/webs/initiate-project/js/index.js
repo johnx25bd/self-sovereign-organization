@@ -4,7 +4,14 @@
 var jsonInterface; // load from projectFactory ABI ....
 var address; // should be contract address .... i.e. projectFactory address
 
-// var web3 = new Web3();
+var web3 = new Web3();
+
+if (window.ethereum) {
+  const ethereum = window.ethereum
+  const web3Provider = new Web3(ethereum)
+
+  /* make web3Provider available to your entire app now */
+}
 // var projectConstructor = new web3.eth.Contract(jsonInterface, address);
 
 // Form data manipulation and handling
@@ -45,7 +52,7 @@ $('#deploy').on('click', function (e) {
   var deployData = processFormData(formData);
 
   // here we will call:
-  
+
   // projectConstructor.methods.deployProject(deployData)
   //   .on('deployed', function (contractAddress) { // this will be an event upon successful invocation of deployProject() that returns the new contract instance's address
   //     generateRicardianContract(formData, contractAddress);
