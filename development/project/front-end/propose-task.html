@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Bare - Start Bootstrap Template</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../vendor/css/custom.css" rel="stylesheet">
+
+<!-- Thanks https://startbootstrap.com/previews/bare/, https://github.com/BlackrockDigital/startbootstrap-bare, https://www.catswhocode.com/blog/5-ready-to-use-bootstrap-form-templates-for-your-projects -->
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Start Bootstrap</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container">
+    <div class="row">
+        <div class="col-md-8">
+                <form class="form-horizontal" method="post">
+                    <fieldset>
+                        <legend class="header">Propose task</legend>
+
+                        <div class="form-group">
+                          <span class="col-md-1 col-md-offset-2 text-center">Project contract address*</span>
+
+                            <div class="col-md-8">
+                                <input id="contractAddress" name="contract" type="text" placeholder="contract address" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                          <span class="col-md-1 col-md-offset-2 text-center">Owner*</span>
+
+                            <div class="col-md-8">
+                                <input id="walletAddress" name="owner" type="text" placeholder="wallet address from metamask" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <span class="col-md-1 col-md-offset-2 text-center">Requirements*</span>
+                            <div class="col-md-8">
+                                <input id="gitCommit" name="gitCommit" type="text" placeholder="git commit" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <span class="col-md-1 col-md-offset-2 text-center">Budget</span>
+                            <div class="col-md-8">
+                                <input id="budget" name="budget" type="text" placeholder="ether" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <span class="col-md-1 col-md-offset-2 text-center">Reward</span>
+                            <div class="col-md-8">
+                                <input id="reward" name="reward" type="text" placeholder="ether" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <span class="col-md-1 col-md-offset-2 text-center">Duration</span>
+                            <div class="col-md-8">
+                                <input id="durattion" name="duration" type="text" placeholder="days" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 text-center">
+                                <button id="proposeTask" type="submit" class="btn btn-primary btn-lg">Propose task</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+        </div>
+    </div>
+</div>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="../vendor/jquery/jquery.min.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.36/dist/web3.min.js" integrity="sha256-nWBTbvxhJgjslRyuAKJHK+XcZPlCnmIAAMixz6EefVk=" crossorigin="anonymous"></script>
+  <script src="./js/propose-task.js"></script>
+
+</body>
+
+</html>
