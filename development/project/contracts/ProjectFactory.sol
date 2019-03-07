@@ -23,6 +23,8 @@ contract ProjectFactory {
 
   }
 
+  event projectCreated (uint projectContractAddress_);
+
   function createProject (
     string memory _githubRepo,
     address _adminRole,
@@ -35,12 +37,23 @@ contract ProjectFactory {
     (uint)
   {
 
-    Project newProject = new Project(_githubRepo, _adminRole, _adminName, _adminGithubUsername, _purpose, _voteInterface, _votePercentage, projectNum);
+    Project newProject = new Project(
+      _githubRepo,
+      _adminRole,
+       _adminName,
+       _adminGithubUsername,
+       _purpose,
+       _voteInterface,
+       _votePercentage,
+       projectNum);
+
     projects.push(newProject);
     projectNum = projectNum + 1;
+
+    emit projectCreated(100);
+
     return projectNum;
 
   }
-
 
 }

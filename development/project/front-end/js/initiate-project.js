@@ -1,16 +1,75 @@
 // Web3 setup
 
 
+var jsonInterface, // load from projectFactory ABI ....
+  web3,
+  project,
+  projectOptions,
+  accounts,
+  jsonInterface;
+
+window.addEventListener('load', async () => {
+  if (false && window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    try {
+      await ethereum.enable();
+      console.log("ETHEREUM ENABLED");
+      // web3.eth.sendTransaction({ /* ... */ });
+    } catch (error) {
+      // throw error;
+    }
+  } else if (false && window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    // web3.eth.sendTransaction({ /* ... */ });
+  } else {
+    web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
+    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+  }
 
 
-// var web3 = new Web3('http://127.0.0.1:8545');
+  (async (web3) => {
+    accounts = await web3.eth.getAccounts();
+
+  })(web3);
+  //
+  // $.getJSON('/build/contracts/Project.json', (json) => {
+  //   jsonInterface = json;
+  //
+  //   projectOptions = {
+  //     abi: jsonInterface.abi,
+  //     data: jsonInterface.bytecode,
+  //     arguments: ['repo', accounts[0], 'string', 'string', 'string', accounts[0], 100, 100]
+  //   };
+  //
+  //   project = new web3.eth.Contract(projectOptions.abi, null, projectOptions);
+  //
+  //   console.log('YO')
+  //   // project.deploy();
+  //
+  //   let latestBlockNum;
+  //
+  //   web3.eth.getBlockNumber()
+  //     .then((blockNum) => {
+  //       latestBlockNum = blockNum;
+  //     });
+  //
+  //   // project.events.projectCreated({}, (error, event) => {
+  //   //     console.log('YAHHHHH', event);
+  //   //   })
+  //   //   .on('data', (event) => {
+  //   //     console.log(event); // same results as the optional callback above
+  //   //   })
+  //   //   .on('changed', (event) => {
+  //   //     // remove event from local database
+  //   //   })
+  //   //   .on('error', console.error);
+  // });
+
+});
 
 
-// projectFactory.methods.createProject('github', accounts[0], 'Alex', 'alexz', 'purpose',  accounts[2], 100).call()
 
-// var projectConstructor = new web3.eth.Contract(jsonInterface, address);
 
-// Form data manipulation and handling
 
 var participantCt = 1;
 var formData;

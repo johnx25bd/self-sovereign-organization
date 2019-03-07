@@ -5,10 +5,6 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "@daostack/infra/contracts/votingMachines/AbsoluteVote.sol";
 /* import "contracts/IntVoteInterface.sol"; // SHOULDN'T need this as AbsoluteVote inherits it ... */
 
-
-
-
-
 contract Project is AbsoluteVote {
   using SafeMath for uint;
   /* using Roles.Role for Role; */
@@ -61,10 +57,18 @@ contract Project is AbsoluteVote {
     // self sovereign ID ?
   }
 
-  constructor(string memory _githubRepo, address _adminRole, string memory _adminName, string memory _adminGithubUsername, string memory _purpose, address _voteInterface, uint _votePercentage, uint _projectNum) public {
+  constructor(
+    string memory _githubRepo,
+    address _adminRole,
+    string memory _adminName,
+    string memory _adminGithubUsername,
+    string memory _purpose,
+    address _voteInterface,
+    uint _votePercentage,
+    uint _projectNum) public {
 
         Participant memory admin;
-        admin.ethAddress = msg.sender;
+        admin.ethAddress = tx.origin;
         admin.legalName = _adminName;
         admin.githubUsername = _adminGithubUsername;
 
@@ -111,6 +115,8 @@ contract Project is AbsoluteVote {
     // do something with dai?
     initiated = true;
   } */
+
+  event taskProposed (bytes32 taskId_);
 
   function proposeTask
   (
@@ -172,6 +178,8 @@ contract Project is AbsoluteVote {
 
     // Figure how to to transmit taskId to client for proposer to email to other participants
     // With an event.
+
+    emit taskProposed(taskId);
     return taskId;
     // ideally we have a db on the server with tasks and statuses, including everyone who has and hasn't voted on them.
     // When people log in, they get an interface with Things They Need To Vote On and Tasks They Need To Complete
