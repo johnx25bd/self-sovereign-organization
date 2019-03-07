@@ -12611,12 +12611,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x7529695693F567Ebb571dB6E4dE7d0964FfA33E1",
-      "transactionHash": "0x306846a8546b7e88945808bc71a30654eaaf355b2fc03a38226bbf601ef57e69"
+      "address": "0xb275D6e5DebcBeA13Bdfb495CcC6E28A067e66A5",
+      "transactionHash": "0xd0f8a261d1aa7ffc23887f4e98244c2dcb87ce696cdad0673f2eeb6b751565e2"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-03-06T13:12:13.363Z",
+  "updatedAt": "2019-03-07T13:17:40.416Z",
   "devdoc": {
     "methods": {
       "cancelVote(bytes32)": {

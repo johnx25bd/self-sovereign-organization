@@ -26,8 +26,8 @@ contract Project is AbsoluteVote {
   // AbsoluteVote absoluteVote;
 
   mapping(address => uint) owing;
-  mapping(bytes32 => Task) tasks; // bytes32 taskId  to  Task?
-  mapping(address => Participant) participants; // mapping for participants?
+  mapping(bytes32 => Task) public tasks; // bytes32 taskId  to  Task?
+  mapping(address => Participant) public participants; // mapping for participants?
   mapping(address => bool) paid;
   mapping(bytes32 => uint) quorums;
   mapping(bytes32 => bytes32) evidenceToTask; // evidenceVoteId => taskId
@@ -54,6 +54,8 @@ contract Project is AbsoluteVote {
     uint owes;
     bool initialized;
     uint equity;
+    mapping (bytes32 => uint) public taskIdToVotes;
+    mapping (bytes32 => uint) public evidenceIdToVotes;
     // self sovereign ID ?
   }
 
@@ -86,11 +88,11 @@ contract Project is AbsoluteVote {
     // check vote status
   }
 
- /* function addParticipant(address _address) public {
+ function addParticipant(address _address) public {
     require(participants.has(msg.sender), "DOES_NOT_HAVE_ADMIN_ROLE");
     participants.add(_address);
-    owing[_address] =
-  } */
+    /* owing[_address] = */
+  }
 
   /*
 
