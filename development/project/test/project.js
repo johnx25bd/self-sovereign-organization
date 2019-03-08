@@ -19,7 +19,7 @@ contract('Project', (accounts) => {
     gihubRepo: "self-sovereign-organization",
     address: accounts[0],
     adminName: 'Isaac',
-    adminGithubUsername: 'isaac',
+    adminGithubUsername: 'isaacsultan',
     projectPurpose: 'to build a website',
     voteInterface: accounts[9], // I think we need to drop this ...
     votePercentage: 100,
