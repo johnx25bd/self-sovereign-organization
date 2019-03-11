@@ -57,6 +57,7 @@ contract Project {
     mapping(address => Participant) public participants; // mapping for participants?
     mapping(address => bool) paid;
     mapping(bytes32 => bytes32) public evidenceToTask; // evidenceVoteId => taskId
+    mapping(bytes32 => uint) public numberOfTaskProposalVotes;
     address[] public participantsArray;
 
     constructor (
@@ -184,36 +185,33 @@ contract Project {
     // Requires
     require(_vote <= 1); // 0 = no, 1 = yes.
     require(participants[msg.sender].paid);
+    require(participants[msg.sender].taskIdToVoted[_taskId] == false); // unless we want the option to change votes ... which will require more logic
 
+    Participant storage participant = participants[msg.sender];
+    Task storage taskForVote = tasks[_taskId];
 
+    // Voting
+    taskForVote.proposalYesVotes += _vote;
+    taskForVote.numVotedProposal += 1;
 
-        require(participants[msg.sender].taskIdToVoted[_taskId] == false); // unless we want the option to change votes ... which will require more logic
+    participant.taskIdToVoted[_taskId] = true;
+    participant.taskIdToVotes[_taskId] = _vote;
 
-        Participant storage participant = participants[msg.sender];
-        Task storage taskForVote = tasks[_taskId];
+    if (taskForVote.numVotedProposal == numberPaid) { // in this implementation,
+        bool decision = tallyTaskProposalVotes(taskForVote);
 
-        // Voting
-        taskForVote.proposalYesVotes += _vote;
-        taskForVote.numVotedProposal += 1;
+        if (decision == true) {
 
-        participant.taskIdToVoted[_taskId] = true;
-        participant.taskIdToVotes[_taskId] = _vote;
+            address payable taskOwner = taskForVote.owner;
+            address(taskOwner).transfer(taskForVote.budget); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
+            taskForVote.status = TaskStatus.inProgress;
 
-        if (taskForVote.numVotedProposal == numberPaid) { // in this implementation,
-            bool decision = tallyTaskProposalVotes(taskForVote);
+        } else {
 
-            if (decision == true) {
-
-                address payable taskOwner = taskForVote.owner;
-                address(taskOwner).transfer(taskForVote.budget); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
-                taskForVote.status = TaskStatus.inProgress;
-
-            } else {
-
-                taskForVote.status = TaskStatus.rejected;
-            }
-          }
+            taskForVote.status = TaskStatus.rejected;
         }
+      }
+    }
 
 function voteOnEvidence(bytes32 _taskId,
     uint8 _vote ) public {

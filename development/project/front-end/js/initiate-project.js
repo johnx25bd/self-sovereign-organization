@@ -9,7 +9,7 @@ var jsonInterface, // load from projectFactory ABI ....
   jsonInterface;
 
 window.addEventListener('load', async () => {
-  if (false && window.ethereum) {
+  if (window.ethereum) {
     window.web3 = new Web3(ethereum);
     try {
       await ethereum.enable();
@@ -18,7 +18,7 @@ window.addEventListener('load', async () => {
     } catch (error) {
       // throw error;
     }
-  } else if (false && window.web3) {
+  } else if (window.web3) {
     window.web3 = new Web3(web3.currentProvider);
     // web3.eth.sendTransaction({ /* ... */ });
   } else {
