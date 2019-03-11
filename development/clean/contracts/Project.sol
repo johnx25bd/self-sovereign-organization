@@ -1,6 +1,6 @@
 pragma solidity ^0.5.2;
 
-import "github.com/OpenZeppelin/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
 contract Project {
 
@@ -171,7 +171,7 @@ contract Project {
 
   }
 
-  function voteOnProposal (
+  function voteOnTaskProposal (
     bytes32 _taskId,
     uint8 _vote ) public {
 
@@ -186,7 +186,6 @@ contract Project {
     require(participants[msg.sender].paid);
 
 
-    if (tasks[_taskId].status == TaskStatus.proposed ) { // vote on task proposal
 
         require(participants[msg.sender].taskIdToVoted[_taskId] == false); // unless we want the option to change votes ... which will require more logic
 
@@ -214,9 +213,12 @@ contract Project {
                 taskForVote.status = TaskStatus.rejected;
             }
           }
-    } else if (tasks[_taskId].status == TaskStatus.evidenceUnderReview) {
+        }
 
-       Participant storage participant = participants[msg.sender];
+function voteOnEvidence(bytes32 _taskId,
+    uint8 _vote ) public {
+
+      Participant storage participant = participants[msg.sender];
         Task storage evidenceForVote = tasks[_taskId];
 
         // Voting
@@ -244,7 +246,7 @@ contract Project {
         }
     }
 
-  }
+
 
   function tallyTaskProposalVotes( Task storage _taskToTally ) internal view returns ( bool ) {
 
@@ -278,7 +280,7 @@ contract Project {
 
   function tallyTaskEvidenceVotes( Task storage _taskEvidenceToTally ) internal view returns ( bool ) {
 
-    // Based on quorum percentage set in constructor. Could also implement this for each task, or make 
+    // Based on quorum percentage set in constructor. Could also implement this for each task, or make
     // quorum proportionate to the budget - higher-value tasks require a greater percentage of project
     // participants to vote to reach consensus:
     if (_taskEvidenceToTally.evidenceYesVotes < (_taskEvidenceToTally.numVotedEvidence * quorumPct / 100)) {

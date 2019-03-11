@@ -39,6 +39,7 @@ contract Project is AbsoluteVote {
     bytes32 taskId;
     address owner;
     uint duration; //seconds
+    uint startTime;
     string requirementsGitCommit; //git commit hash "36c989247e49df868ff6b990ede7bcfe7c94b5bd"
     uint budget; // wei or dai?
     uint reward;
@@ -73,7 +74,6 @@ contract Project is AbsoluteVote {
         admin.ethAddress = tx.origin;
         admin.legalName = _adminName;
         admin.githubUsername = _adminGithubUsername;
-
         participants[_adminRole] = admin;
 
         githubRepo = _githubRepo; // test validity

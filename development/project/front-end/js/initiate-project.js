@@ -31,39 +31,39 @@ window.addEventListener('load', async () => {
     accounts = await web3.eth.getAccounts();
 
   })(web3);
-  //
-  // $.getJSON('/build/contracts/Project.json', (json) => {
-  //   jsonInterface = json;
-  //
-  //   projectOptions = {
-  //     abi: jsonInterface.abi,
-  //     data: jsonInterface.bytecode,
-  //     arguments: ['repo', accounts[0], 'string', 'string', 'string', accounts[0], 100, 100]
-  //   };
-  //
-  //   project = new web3.eth.Contract(projectOptions.abi, null, projectOptions);
-  //
-  //   console.log('YO')
-  //   // project.deploy();
-  //
-  //   let latestBlockNum;
-  //
-  //   web3.eth.getBlockNumber()
-  //     .then((blockNum) => {
-  //       latestBlockNum = blockNum;
-  //     });
-  //
-  //   // project.events.projectCreated({}, (error, event) => {
-  //   //     console.log('YAHHHHH', event);
-  //   //   })
-  //   //   .on('data', (event) => {
-  //   //     console.log(event); // same results as the optional callback above
-  //   //   })
-  //   //   .on('changed', (event) => {
-  //   //     // remove event from local database
-  //   //   })
-  //   //   .on('error', console.error);
-  // });
+
+  $.getJSON('/build/contracts/Project.json', (json) => {
+    jsonInterface = json;
+
+    projectOptions = {
+      abi: jsonInterface.abi,
+      data: jsonInterface.bytecode,
+      arguments: ['repo', accounts[0], 'string', 'string', 'string', accounts[0], 100, 100]
+    };
+
+    project = new web3.eth.Contract(projectOptions.abi, null, projectOptions);
+
+    console.log('YO')
+    // project.deploy();
+
+    let latestBlockNum;
+
+    web3.eth.getBlockNumber()
+      .then((blockNum) => {
+        latestBlockNum = blockNum;
+      });
+
+    // project.events.projectCreated({}, (error, event) => {
+    //     console.log('YAHHHHH', event);
+    //   })
+    //   .on('data', (event) => {
+    //     console.log(event); // same results as the optional callback above
+    //   })
+    //   .on('changed', (event) => {
+    //     // remove event from local database
+    //   })
+    //   .on('error', console.error);
+  });
 
 });
 
