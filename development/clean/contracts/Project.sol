@@ -9,13 +9,13 @@ contract Project {
     bool public initiated;
     string public githubRepo;
     string public purpose;
-    string arbitraryRequirements;
-    string legalContractUrl;
-    uint requiredInvestment;
-    uint requiredNumberPaid;
-    uint numberPaid;
-    uint projectNum;
-    uint quorumPct;
+    string public arbitraryRequirements;
+    string public legalContractUrl;
+    uint public requiredInvestment;
+    uint public requiredNumberPaid;
+    uint public numberPaid;
+    uint public projectNum;
+    uint public quorumPct;
 
     enum TaskStatus { proposed, inProgress, evidenceUnderReview, complete, rejected }
 
@@ -54,17 +54,10 @@ contract Project {
         mapping (bytes32 => uint) evidenceIdToVotes;
     }
 
-
-    mapping(address => uint) owing;
     mapping(bytes32 => Task) public tasks; // bytes32 taskId  to  Task?
     mapping(address => Participant) public participants; // mapping for participants?
-    mapping(address => bool) paid;
-    mapping(bytes32 => bytes32) public evidenceToTask; // evidenceVoteId => taskId
-<<<<<<< HEAD
-    mapping(bytes32 => uint) public numberOfTaskProposalVotes;
-=======
+    mapping(address => bool) public paid;
     mapping(bytes32 => TaskVote) public taskVotes; //taskId to TaskVote
->>>>>>> origin/clean
     address[] public participantsArray;
 
     constructor (
@@ -91,6 +84,10 @@ contract Project {
         projectNum = _projectNum;
         quorumPct = _quorumPct;
 
+  }
+
+  function getBalance () public view returns (uint) {
+      return address(this).balance;
   }
 
     function addParticipant(
@@ -125,12 +122,6 @@ contract Project {
                 initiateProject();
             }
         }
-
-    // convert ether to dai (MakerDAO)
-      // ***stuff to code***
-      //  swaps for DAI maybe ...
-      // Route funds to multisig wallet (Gnosis)
-    // paid[msg.sender] = true;
   }
 
   function initiateProject () internal {
@@ -156,7 +147,8 @@ contract Project {
         uint _duration, //seconds
         string memory _requirementsGitCommitHash,
         uint _budget,
-        uint _reward
+        uint _reward,
+        uint _latePenalty
     ) public returns (bytes32 ) {
 
         require(initiated == true);
@@ -171,7 +163,8 @@ contract Project {
         newTask.reward = _reward;
 
         bytes32 taskId = keccak256(abi.encodePacked(_owner, _requirementsGitCommitHash, now));
-
+        newTask.taskId = taskId;
+        newTask.latePenalty = _latePenalty;
         tasks[taskId] = newTask;
 
         emit taskProposed(taskId);
@@ -195,7 +188,8 @@ contract Project {
     require(participants[msg.sender].taskIdToVoted[_taskId] == false); // unless we want the option to change votes ... which will require more logic
 
     Participant storage participant = participants[msg.sender];
-    Task storage taskForVote = tasks[_taskId];
+    TaskVote storage taskForVote = taskVotes[_taskId];
+    Task storage task = tasks[_taskId];
 
     // Voting
     taskForVote.proposalYesVotes += _vote;
@@ -204,70 +198,54 @@ contract Project {
     participant.taskIdToVoted[_taskId] = true;
     participant.taskIdToVotes[_taskId] = _vote;
 
-<<<<<<< HEAD
     if (taskForVote.numVotedProposal == numberPaid) { // in this implementation,
         bool decision = tallyTaskProposalVotes(taskForVote);
-=======
-        Participant storage participant = participants[msg.sender];
-        TaskVote storage taskForVote = taskVotes[_taskId];
-        Task storage task = tasks[_taskId];
->>>>>>> origin/clean
 
         if (decision == true) {
-
-            address payable taskOwner = taskForVote.owner;
-            address(taskOwner).transfer(taskForVote.budget); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
-            taskForVote.status = TaskStatus.inProgress;
+            address payable taskOwner = task.owner;
+            address(taskOwner).transfer(task.budget);
+              // this would be where we instantiate a new taskWallet contract controlled by task owner ...
+              // Also a risk - no logic to control if budget runs out.
+            task.status = TaskStatus.inProgress;
 
         } else {
+            task.status = TaskStatus.rejected;
 
-<<<<<<< HEAD
-            taskForVote.status = TaskStatus.rejected;
         }
-      }
-=======
-                address payable taskOwner = task.owner;
-                address(taskOwner).transfer(task.budget); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
-                task.status = TaskStatus.inProgress;
-
-            } else {
-                task.status = TaskStatus.rejected;
-            }
-        }
->>>>>>> origin/clean
     }
+}
 
 function voteOnEvidence(bytes32 _taskId,
     uint8 _vote ) public {
 
-      Participant storage participant = participants[msg.sender];
-        Task storage task = tasks[_taskId];
-        TaskVote storage taskVote = taskVotes[_taskId];
+    Participant storage participant = participants[msg.sender];
+    Task storage task = tasks[_taskId];
+    TaskVote storage taskVote = taskVotes[_taskId];
 
-        // Voting
-        taskVote.evidenceYesVotes += _vote;
-        taskVote.numVotedEvidence += 1;
+    // Voting
+    taskVote.evidenceYesVotes += _vote;
+    taskVote.numVotedEvidence += 1;
 
-        participant.evidenceIdToVoted[_taskId] = true;
-        participant.evidenceIdToVotes[_taskId] = _vote;
+    participant.evidenceIdToVoted[_taskId] = true;
+    participant.evidenceIdToVotes[_taskId] = _vote;
 
-        if (taskVote.numVotedEvidence == numberPaid) {
-            bool decision = tallyTaskEvidenceVotes(taskVote);
+    if (taskVote.numVotedEvidence == numberPaid) {
+        bool decision = tallyTaskEvidenceVotes(taskVote);
 
-            if (decision == true) {
+        if (decision == true) {
 
-                address payable taskOwner = task.owner;
-                if (task.submissionTime > task.submissionTime + task.duration) {
-                    address(taskOwner).transfer(task.reward - (task.reward * task.latePenalty / 100)); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
-                } else {
-                    address(taskOwner).transfer(task.reward);
-                }
-                task.status = TaskStatus.inProgress;
+            address payable taskOwner = task.owner;
+            if (task.submissionTime > task.submissionTime + task.duration) {
+                address(taskOwner).transfer(task.reward - (task.reward * task.latePenalty / 100)); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
             } else {
-                task.status = TaskStatus.rejected;
+                address(taskOwner).transfer(task.reward);
             }
+            task.status = TaskStatus.complete;
+        } else {
+            task.status = TaskStatus.inProgress;
         }
     }
+}
 
 
 

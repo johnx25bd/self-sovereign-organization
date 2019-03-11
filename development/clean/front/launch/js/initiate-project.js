@@ -9,7 +9,7 @@ var jsonInterface, // load from actory ABI ....
   jsonInterface;
 
 window.addEventListener('load', async () => {
-  if (window.ethereum) {
+  if (false && window.ethereum) {
     window.web3 = new Web3(ethereum);
     try {
       await ethereum.enable();
@@ -18,7 +18,7 @@ window.addEventListener('load', async () => {
     } catch (error) {
       // throw error;
     }
-  } else if (window.web3) {
+  } else if (false && window.web3) {
     window.web3 = new Web3(web3.currentProvider);
     // web3.eth.sendTransaction({ /* ... */ });
   } else {
@@ -26,43 +26,41 @@ window.addEventListener('load', async () => {
     console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
   }
 
-
-  (async (web3) => {
-    accounts = await web3.eth.getAccounts();
-
-  })(web3);
-
-  $.getJSON('../build/contracts/Project.json', (json) => {
+  $.getJSON('../../build/contracts/Project.json', (json) => {
     jsonInterface = json;
 
-    projectOptions = {
-      abi: jsonInterface.abi,
-      data: jsonInterface.bytecode,
-      arguments: ['repo', accounts[0], 'string', 'string', 'string', accounts[0], 100, 100]
-    };
+    (async (web3) => {
+      accounts = await web3.eth.getAccounts();
 
-    project = new web3.eth.Contract(projectOptions.abi, null, projectOptions);
+      projectOptions = {
+        abi: jsonInterface.abi,
+        data: jsonInterface.bytecode,
+      };
 
-    let latestBlockNum;
+      project = new web3.eth.Contract(projectOptions.abi, null, projectOptions);
 
-    web3.eth.getBlockNumber()
-      .then((blockNum) => {
-        latestBlockNum = blockNum;
-      });
-
-    // project.events.projectCreated({}, (error, event) => {
-    //     console.log('YAHHHHH', event);
-    //   })
-    //   .on('data', (event) => {
-    //     console.log(event); // same results as the optional callback above
-    //   })
-    //   .on('changed', (event) => {
-    //     // remove event from local database
-    //   })
-    //   .on('error', console.error);
+    })(web3);
   });
 
+  let latestBlockNum;
+
+  web3.eth.getBlockNumber()
+    .then((blockNum) => {
+      latestBlockNum = blockNum;
+    });
+
+  // project.events.projectCreated({}, (error, event) => {
+  //     console.log('YAHHHHH', event);
+  //   })
+  //   .on('data', (event) => {
+  //     console.log(event); // same results as the optional callback above
+  //   })
+  //   .on('changed', (event) => {
+  //     // remove event from local database
+  //   })
+  //   .on('error', console.error);
 });
+
 
 
 
@@ -104,26 +102,43 @@ $('#deploy').on('click', function(e) {
   var deployData = processFormData(formData);
   console.log(deployData);
 
-  generateRicardianContract(deployData, 'receipt.contractAddress', jsonInterface)
+  deployArgs = [deployData.projectGithub,
+    deployData.offeror.name,
+    deployData.offeror.github,
+    deployData.projectPurpose,
+    String(web3.utils.toWei(String(deployData.requiredPayment.value), 'ether')),
+    deployData.requiredNumberPaid.value,
+    '50',
+    '1'
 
-  // projectFactory.methods.createProject('github', accounts[0], 'st', 'st', 'st', accounts[0], 100)
-  //   .send({
-  //     from: accounts[0]
-  //   })
-  //   .on('receipt', (receipt) => {
-  //     console.log(receipt); // this should have contract address ...
-  //   });
+  ]
 
-  // here we will call:
+  project.deploy({
+      data: jsonInterface.bytecode,
+      arguments: deployArgs
+    })
+    .send({
+      from: accounts[0],
+      gas: 15000000,
+      gasPrice: '2000000000'
+    })
+    .on('receipt', (receipt) => {
+      console.log(receipt); // this should have contract address ...
+      project.options.address = receipt.contractAddress;
+      generateRicardianContract(deployData, receipt.contractAddress, jsonInterface);
 
-  // projectConstructor.methods.deployProject(deployData)
-  //   .on('deployed', function (contractAddress) { // this will be an event upon successful invocation of deployProject() that returns the new contract instance's address
-  //     generateRicardianContract(formData, contractAddress);
-  //   });
+      deployData.offerees.forEach((offeree) => {
+        project.methods.addParticipant(offeree.wallet, offeree.name, offeree.github)
+          .send({
+            from: accounts[0],
+            gas: 15000000,
+            gasPrice: '2000000000'
+          }).on('receipt', (receipt) => { console.log(receipt); });
+      })
+      // project.methods.addParticipant([])
 
+    });
 })
-
-
 
 function processFormData(_formData) {
 
@@ -131,11 +146,16 @@ function processFormData(_formData) {
   // Be sure to account for the variable number of participants ....
   var fLength = _formData.length;
   var rData = {
-    offeror: {}
+    offeror: {},
+    offerees: [],
+    projectName: "",
+    projectGithub: "",
+    projectPurpose: "",
+    date: ""
   };
 
   var participants = _formData.slice(4, fLength - 4);
-  rData.name = _formData[0].value;
+  rData.projectName = _formData[0].value;
   rData.projectGithub = _formData[fLength - 2].value;
   rData.offeror.name = _formData[1].value;
   rData.offeror.github = _formData[2].value;
@@ -159,8 +179,8 @@ function processFormData(_formData) {
 }
 
 String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
+  var target = this;
+  return target.replace(new RegExp(search, 'g'), replacement);
 };
 
 function generateRicardianContract(_formData, _contractAddress, _jsonInterface) {
@@ -168,23 +188,23 @@ function generateRicardianContract(_formData, _contractAddress, _jsonInterface) 
   // will need to load in Project.json ...
   // Loop through form data
   var contractsPack = [];
-  var contractData = ricardianContractData.data;
+  var contractData = _formData;
 
-  ricardianContractData.data.offerees.forEach((offeree) => {
+  _formData.offerees.forEach((offeree) => {
     var contract = ricardianContractData.template;
-    contract = contract.replace(/\[OFFEROR'S NAME\]/g, contractData.offeror.name);
-      // .replaceAll("[PROJECT NAME]", contractData.projectName)
-      // .replaceAll("[OFFEROR'S SERVER USERNAME]", contractData.offeror.github)
-      // .replaceAll("[OFFEROR'S WALLET ADDRESS]", contractData.offeror.wallet)
-      // .replaceAll("[DATE]", new Date().toDateString())
-      // .replaceAll("[OFFEREE'S NAME]", offeree.name)
-      // .replaceAll("[OFFEREE'S SERVER USERNAME]", offeree.github)
-      // .replaceAll("[OFFEREE’S WALLET ADDRESS]", offeree.wallet)
-      // .replaceAll("[CONTRACT ADDRESS]", _contractAddress)
-      // .replaceAll("[GITHUB REPOSITORY]", contractData.githubRepo)
-      // .replaceAll("[REQUIRED NUMBER PAID]", contractData.requiredNumberPaid)
-      // .replaceAll("[REQUIRED PAYMENT]", contractData.requiredPayment);
-      console.log(contract);
+    contract = contract.replace(/\[OFFEROR'S NAME\]/g, contractData.offeror.name)
+      .replaceAll(/\[PROJECT NAME\]/g, contractData.projectName)
+      .replaceAll(/\[OFFEROR'S SERVER USERNAME\]/g, contractData.offeror.github)
+      .replaceAll(/\[OFFEROR'S WALLET ADDRESS\]/g, contractData.offeror.wallet)
+      .replaceAll(/\[DATE\]/g, new Date().toDateString())
+      .replaceAll(/\[OFFEREE'S NAME\]/g, offeree.name)
+      .replaceAll(/\[OFFEREE'S SERVER USERNAME\]/g, offeree.github)
+      .replaceAll(/\[OFFEREE’S WALLET ADDRESS\]/g, offeree.wallet)
+      .replaceAll(/\[CONTRACT ADDRESS\]/g, _contractAddress)
+      .replaceAll(/\[GITHUB REPOSITORY\]/g, contractData.githubRepo)
+      .replaceAll(/\[REQUIRED NUMBER PAID\]/g, contractData.requiredNumberPaid)
+      .replaceAll(/\[REQUIRED PAYMENT\]/g, contractData.requiredPayment);
+
     contractsPack.push({
       name: offeree.name,
       c: contract
@@ -192,38 +212,39 @@ function generateRicardianContract(_formData, _contractAddress, _jsonInterface) 
   });
 
   var zip = new JSZip();
-
+  console.log(contractsPack);
   contractsPack.forEach((contract) => {
-    // var folder = zip.folder()
-    console.log("Contract")
-    zip.file(contract.name + " - " + contractData.projectName + " contract.txt", contract.c);
+    var folder = zip.folder()
+      folder.file(contract.name + " - " + contractData.projectName + " contract.txt", contract.c);
+      folder.file('Project.sol', jsonInterface.source);
+      folder.file('Project.json', jsonInterface.bytecode);
   })
 
   zip.generateAsync({
       type: "blob"
     })
     .then(function(content) {
-      console.log('content' , content);
+      console.log('content', content);
       // Force down of the Zip file
-      saveAs(content, "archive.zip");
+      saveAs(content, contractData.projectName + " Ricardian Contracts.zip");
     });
 
   // download(contractsPack[0].name + " contract.txt", contractsPack[0].c);
-
 }
 
-function download(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
-}
+//
+// function download(filename, text) {
+//   var element = document.createElement('a');
+//   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+//   element.setAttribute('download', filename);
+//
+//   element.style.display = 'none';
+//   document.body.appendChild(element);
+//
+//   element.click();
+//
+//   document.body.removeChild(element);
+// }
 
 var ricardianContractData = {
   template: `
@@ -375,19 +396,5 @@ var ricardianContractData = {
 
     Witness                 Date
     `,
-  data: {
-    projectName: "Self Sovereign Organization",
-    projectGithub: "https://github.com/robisoniv/self-sovereign-organization",
-    date: new Date().toDateString(),
-    offeror: {
-      name: "John Hoopes",
-      walletAddress: "0xno",
-      github: "robisoniv"
-    },
-    offerees: [{
-      name: 'Isaac',
-      walletAddress: '0xyes',
-      github: 'isaacsultan'
-    }]
-  }
+
 };
