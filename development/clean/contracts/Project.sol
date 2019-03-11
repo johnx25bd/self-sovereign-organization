@@ -32,6 +32,9 @@ contract Project {
         uint submissionTime;
         uint latePenalty; // percent to deduct from reward if late.
         string evidenceGitCommit;
+    }
+
+    struct TaskVote {
         uint numVotedProposal;
         uint proposalYesVotes;
         uint numVotedEvidence;
@@ -57,7 +60,11 @@ contract Project {
     mapping(address => Participant) public participants; // mapping for participants?
     mapping(address => bool) paid;
     mapping(bytes32 => bytes32) public evidenceToTask; // evidenceVoteId => taskId
+<<<<<<< HEAD
     mapping(bytes32 => uint) public numberOfTaskProposalVotes;
+=======
+    mapping(bytes32 => TaskVote) public taskVotes; //taskId to TaskVote
+>>>>>>> origin/clean
     address[] public participantsArray;
 
     constructor (
@@ -197,8 +204,14 @@ contract Project {
     participant.taskIdToVoted[_taskId] = true;
     participant.taskIdToVotes[_taskId] = _vote;
 
+<<<<<<< HEAD
     if (taskForVote.numVotedProposal == numberPaid) { // in this implementation,
         bool decision = tallyTaskProposalVotes(taskForVote);
+=======
+        Participant storage participant = participants[msg.sender];
+        TaskVote storage taskForVote = taskVotes[_taskId];
+        Task storage task = tasks[_taskId];
+>>>>>>> origin/clean
 
         if (decision == true) {
 
@@ -208,45 +221,57 @@ contract Project {
 
         } else {
 
+<<<<<<< HEAD
             taskForVote.status = TaskStatus.rejected;
         }
       }
+=======
+                address payable taskOwner = task.owner;
+                address(taskOwner).transfer(task.budget); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
+                task.status = TaskStatus.inProgress;
+
+            } else {
+                task.status = TaskStatus.rejected;
+            }
+        }
+>>>>>>> origin/clean
     }
 
 function voteOnEvidence(bytes32 _taskId,
     uint8 _vote ) public {
 
       Participant storage participant = participants[msg.sender];
-        Task storage evidenceForVote = tasks[_taskId];
+        Task storage task = tasks[_taskId];
+        TaskVote storage taskVote = taskVotes[_taskId];
 
         // Voting
-        evidenceForVote.evidenceYesVotes += _vote;
-        evidenceForVote.numVotedEvidence += 1;
+        taskVote.evidenceYesVotes += _vote;
+        taskVote.numVotedEvidence += 1;
 
         participant.evidenceIdToVoted[_taskId] = true;
         participant.evidenceIdToVotes[_taskId] = _vote;
 
-        if (evidenceForVote.numVotedEvidence == numberPaid) {
-            bool decision = tallyTaskEvidenceVotes(evidenceForVote);
+        if (taskVote.numVotedEvidence == numberPaid) {
+            bool decision = tallyTaskEvidenceVotes(taskVote);
 
             if (decision == true) {
 
-                address payable taskOwner = evidenceForVote.owner;
-                if (evidenceForVote.submissionTime > evidenceForVote.submissionTime + evidenceForVote.duration) {
-                    address(taskOwner).transfer(evidenceForVote.reward - (evidenceForVote.reward * evidenceForVote.latePenalty / 100)); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
+                address payable taskOwner = task.owner;
+                if (task.submissionTime > task.submissionTime + task.duration) {
+                    address(taskOwner).transfer(task.reward - (task.reward * task.latePenalty / 100)); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
                 } else {
-                    address(taskOwner).transfer(evidenceForVote.reward);
+                    address(taskOwner).transfer(task.reward);
                 }
-                evidenceForVote.status = TaskStatus.inProgress;
+                task.status = TaskStatus.inProgress;
             } else {
-                evidenceForVote.status = TaskStatus.rejected;
+                task.status = TaskStatus.rejected;
             }
         }
     }
 
 
 
-  function tallyTaskProposalVotes( Task storage _taskToTally ) internal view returns ( bool ) {
+  function tallyTaskProposalVotes( TaskVote storage _taskToTally ) internal view returns ( bool ) {
 
     // Based on quorum percentage set in constructor. Could also implement this for each task, or make
     // quorum proportionate to the budget - higher-value tasks require a greater percentage of project
@@ -276,7 +301,7 @@ function voteOnEvidence(bytes32 _taskId,
 
   }
 
-  function tallyTaskEvidenceVotes( Task storage _taskEvidenceToTally ) internal view returns ( bool ) {
+  function tallyTaskEvidenceVotes( TaskVote storage _taskEvidenceToTally ) internal view returns ( bool ) {
 
     // Based on quorum percentage set in constructor. Could also implement this for each task, or make
     // quorum proportionate to the budget - higher-value tasks require a greater percentage of project
