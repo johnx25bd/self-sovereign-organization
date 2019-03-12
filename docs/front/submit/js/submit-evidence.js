@@ -65,7 +65,7 @@ $('#deploy').on('click', function(e) {
       gasPrice: '2000000000'
     })
     .on('receipt', (receipt) => {
-      console.log("========== Task Proposed at " + receipt.events.taskProposed.returnValues.taskId_ + "==========");
+      console.log("========== Evidence Submitted ==========");
       $('#task-id').html("Task proposed: " + receipt.events.taskProposed.returnValues.taskId_);
       console.log(receipt); // this should have contract address ...
 

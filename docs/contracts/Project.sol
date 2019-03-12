@@ -204,6 +204,7 @@ contract Project {
         if (decision == true) {
             address payable taskOwner = task.owner;
             address(taskOwner).transfer(task.budget);
+            task.taskStart = now;
               // this would be where we instantiate a new taskWallet contract controlled by task owner ...
               // Also a risk - no logic to control if budget runs out.
             task.status = TaskStatus.inProgress;
@@ -235,7 +236,7 @@ function voteOnEvidence(bytes32 _taskId,
         if (decision == true) {
 
             address payable taskOwner = task.owner;
-            if (task.submissionTime > task.submissionTime + task.duration) {
+            if (task.submissionTime > task.taskStart + task.duration) {
                 address(taskOwner).transfer(task.reward - (task.reward * task.latePenalty / 100)); // this would be where we instantiate a new taskWallet contract controlled by task owner ...
             } else {
                 address(taskOwner).transfer(task.reward);
