@@ -1,0 +1,15 @@
+
+
+All the informational assets involved in the self sovereign organization are, in our implementation, stored on a public blockchain, the Ethereum blockchain. No doubt you could run a separate blockchain - a private net, but running the ethereum clients and with code developed in solidity or vyper - buy in from network node operators would be required, as with any ledger distributed amongst uncoordinated or loosely coordinated entities ... anyway, we store it on the Ethereum blockchain, which is public. All data in our system can be read by anyone. Forever.
+
+There are, however, several schemes we can imagine to assure privacy, within the bounds of excepting the discovery - by stealing or otherwise surmising - of the encrypting private key (or symmetric key - which is a private key without a public key, or one that is its own public key). Obviously the git references we are storing could be encrypted prior to the data specifying that particular transaction being transmitted, or could resolve to an encrypted document (aka file), either or both of which could provide access to the contained information. This is a fairly simple implementation, with the key security and sharing techniques occurring off chain. On-chain schemes would require a good deal more sophistication, possibly, and are worth exploring, though may be outside the scope of this research effort.
+
+The true decryption (private) key could be transmitted to n participants (as defined in Project.sol) by the creator - which we would be interested to see be a software agent, running open source code ... -
+
+To explore the opportunities created by a trusted reencryption service (a la umbral) in a system in which people want to manage informational and financial assets
+
+in an asymmetric system by encrypting it with the proxy node's public ke
+
+
+
+That is the development blockchain represents: the ability to have (i.e. maintain and share) financial assets in a shared software system just as we have had informational assets for 20 or 30 years. To transmit value without involving the banking system (cash equities bonds etc - financial instruments) was reserved to the realm of barter of goods and services. No meaningful extragovernmental system of value exchange has existed in humanity for centuries, perhaps longer, at least in the connected world (globalized w/e - but no, informal systems are probably more common than we acknowledge here, and are worth understanding). And now, people who learn how to code, can understand the objective mechanism by which those units of value - dollars or stocks or bitcoins - are tracked. How we know how much we have (and, in this system - somewhat optionally - how much everyone else has.) They can understand what it means to own something that is only theirs, truly only theirs: their private key. The objective access to the system, to either transmit funds to another wallet - which could belong to themselves, or to someone else (or to a program - a mutually agreed upon set of rules for governing that financial or informational asset. As an aside in this system financial assets are informational assets.)

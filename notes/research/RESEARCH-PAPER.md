@@ -61,6 +61,7 @@ How a project ends will need to be defined at its outset. We expect that differe
 ## A Final Core Component
 
 The final challenge of building a fully functional system is related to privacy. The system is severely constrained if project participants don’t have the option to keep data stored on chain private; much of the point is defeated if this implementation relies on storing it in secure off-chain databases, a private blockchain instance, etc. Our solution to this problem will rely on a mechanism to manage keys, enabling the proper participants the ability to grant or revoke access to data in its decrypted state (i.e. to decryption keys of stored encrypted data). This will have constraints, of course - revocation is impossible if a participant makes a copy of a decrypted file while they still have access - but we suspect that granting and revoking access still may have some value.
+This will be a major focus of our research through the course of the project; as such we cannot yet outline our solution. We’ll start by examining existing key management schemes, and by studying applications of homomorphic cryptography, perhaps leveraging Future of Blockchain challenger project NuCypher’s Fully Homomorphic Encryption library and proxy re-encryption network. Hopefully, our solution will be portable to other dApp projects.
 
 ## Questions
 
