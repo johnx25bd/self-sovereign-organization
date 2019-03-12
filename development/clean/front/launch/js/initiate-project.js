@@ -123,8 +123,11 @@ $('#deploy').on('click', function(e) {
       gasPrice: '2000000000'
     })
     .on('receipt', (receipt) => {
+      console.log("========== Contract Deployed at " + receipt.contractAddress + "==========");
+
       console.log(receipt); // this should have contract address ...
       project.options.address = receipt.contractAddress;
+
       generateRicardianContract(deployData, receipt.contractAddress, jsonInterface);
 
       deployData.offerees.forEach((offeree) => {
@@ -133,9 +136,11 @@ $('#deploy').on('click', function(e) {
             from: accounts[0],
             gas: 15000000,
             gasPrice: '2000000000'
-          }).on('receipt', (receipt) => { console.log(receipt); });
-      })
-      // project.methods.addParticipant([])
+          }).on('receipt', (receipt) => {
+            console.log(offeree.name + " - added to participant list:");
+            console.log(receipt);
+          });
+      });
 
     });
 })
@@ -214,7 +219,7 @@ function generateRicardianContract(_formData, _contractAddress, _jsonInterface) 
   var zip = new JSZip();
   console.log(contractsPack);
   contractsPack.forEach((contract) => {
-    var folder = zip.folder()
+    var folder = zip.folder(contract.name);
       folder.file(contract.name + " - " + contractData.projectName + " contract.txt", contract.c);
       folder.file('Project.sol', jsonInterface.source);
       folder.file('Project.json', jsonInterface.bytecode);
@@ -224,7 +229,6 @@ function generateRicardianContract(_formData, _contractAddress, _jsonInterface) 
       type: "blob"
     })
     .then(function(content) {
-      console.log('content', content);
       // Force down of the Zip file
       saveAs(content, contractData.projectName + " Ricardian Contracts.zip");
     });
